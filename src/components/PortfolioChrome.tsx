@@ -4,6 +4,10 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { LiquidGlass } from './LiquidGlass'
 
+type DocumentWithViewTransition = Document & {
+  startViewTransition?: (updateCallback: () => void) => { finished: Promise<void> }
+}
+
 function MagnifierIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none">
@@ -149,9 +153,19 @@ export function PortfolioChrome() {
 
   const toggleTheme = () => {
     const nextTheme = theme === 'dark' ? 'light' : 'dark'
-    document.documentElement.setAttribute('data-theme', nextTheme)
-    localStorage.setItem('theme', nextTheme)
-    setTheme(nextTheme)
+    const applyTheme = () => {
+      document.documentElement.setAttribute('data-theme', nextTheme)
+      localStorage.setItem('theme', nextTheme)
+      setTheme(nextTheme)
+    }
+
+    const docWithTransition = document as DocumentWithViewTransition
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches && docWithTransition.startViewTransition) {
+      docWithTransition.startViewTransition(applyTheme)
+      return
+    }
+
+    applyTheme()
   }
 
   const socials = useMemo(

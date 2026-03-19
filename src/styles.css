@@ -439,14 +439,69 @@ a {
   opacity: 0.3;
 }
 
+.portfolio-vignette-layer::after {
+  content: "";
+  position: absolute;
+  inset: -14px;
+  background: radial-gradient(ellipse at center, transparent 56%, rgba(23, 58, 64, 0.2) 100%);
+  filter: blur(10px);
+  opacity: 0.5;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 280ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-old(root) {
+  animation-name: theme-fade-out;
+}
+
+::view-transition-new(root) {
+  animation-name: theme-fade-in;
+}
+
+@keyframes theme-fade-out {
+  from {
+    opacity: 1;
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    filter: blur(1.5px);
+  }
+}
+
+@keyframes theme-fade-in {
+  from {
+    opacity: 0;
+    filter: blur(1.5px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
 :root[data-theme="dark"] .portfolio-vignette-layer {
   background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.76) 100%);
   opacity: 0.5;
+}
+
+:root[data-theme="dark"] .portfolio-vignette-layer::after {
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.76) 100%);
+  opacity: 0.55;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .portfolio-vignette-layer {
     background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.76) 100%);
     opacity: 0.5;
+  }
+
+  :root:not([data-theme="light"]) .portfolio-vignette-layer::after {
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.76) 100%);
+    opacity: 0.55;
   }
 }
