@@ -1,7 +1,8 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import folderMaskUrl from "../assets/folder.svg?url";
 import { FolderPopover } from "./FolderPopover";
+import type { GithubProject } from "../data/githubProjects";
 
 type Dir = "ltr" | "rtl";
 
@@ -180,15 +181,17 @@ function VirtualMarqueeRow({ duration, dir }: { duration: number; dir: Dir }) {
 }
 
 export function FolderGrid({
+	projects,
 	rows = Math.max(1, ROW_CONFIG.length - 1),
 	className = "",
 }: {
+	projects: GithubProject[];
 	rows?: number;
 	className?: string;
 }) {
 	const config = ROW_CONFIG.slice(0, rows);
-	const [active, setActive] = useState<null | { folderId: number; origin: { x: number; y: number } }>(
-		null,
+	const [active, setActive] = useState<null | { projectIndex: number; origin: { x: number; y: number } }>(
+		null
 	);
 
 	const gridRef = useRef<HTMLDivElement | null>(null);
@@ -201,8 +204,12 @@ export function FolderGrid({
 		if (!btn) return;
 
 		const absIndexRaw = btn.dataset.absIndex;
-		const folderId = absIndexRaw ? Number(absIndexRaw) : NaN;
-		if (Number.isNaN(folderId)) return;
+		const absIndex = absIndexRaw ? Number(absIndexRaw) : NaN;
+		if (Number.isNaN(absIndex)) return;
+
+		const projectCount = projects.length;
+		if (projectCount === 0) return;
+		const projectIndex = ((absIndex % projectCount) + projectCount) % projectCount;
 
 		const rect = btn.getBoundingClientRect();
 		const origin = {
@@ -210,8 +217,8 @@ export function FolderGrid({
 			y: rect.top + rect.height / 2,
 		};
 
-		setActive({ folderId, origin });
-	}, []);
+		setActive({ projectIndex, origin });
+	}, [projects.length]);
 
 	useEffect(() => {
 		const el = gridRef.current;
@@ -263,7 +270,7 @@ export function FolderGrid({
 
 			{active && (
 				<FolderPopover
-					folderId={active.folderId}
+					project={projects[active.projectIndex]}
 					origin={active.origin}
 					onClose={() => setActive(null)}
 				/>
@@ -284,7 +291,7 @@ const styles: {
 		flexDirection: "column",
 		gap: `${GRID_ROW_GAP}px`,
 		padding: "0",
-		background: "#eef1f5",
+		background: "transparent",
 		borderRadius: "0",
 		cursor: "default",
 		userSelect: "none",

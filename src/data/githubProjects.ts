@@ -1,0 +1,158 @@
+export type GithubProject = {
+  id: number
+  name: string
+  description: string
+  tag: string
+  color: string
+  accent: string
+  url: string
+}
+
+// Placeholder projects for now. Swap these for real GitHub data later.
+export const githubProjects: GithubProject[] = [
+  {
+    id: 1,
+    name: 'Aurora Notes',
+    description: 'A calm note-taking UI with fast search and offline-first sync.',
+    tag: 'UI',
+    color: '#e8f4ff',
+    accent: '#3b82f6',
+    url: 'https://github.com/your-handle/aurora-notes',
+  },
+  {
+    id: 2,
+    name: 'Lagoon Commerce',
+    description: 'A minimal storefront prototype with smooth transitions and cart UX.',
+    tag: 'Design',
+    color: '#fff4e8',
+    accent: '#f97316',
+    url: 'https://github.com/your-handle/lagoon-commerce',
+  },
+  {
+    id: 3,
+    name: 'Pulse Dashboard',
+    description: 'Interactive data dashboard with fast filtering and clean charts.',
+    tag: 'Data',
+    color: '#f4ffe8',
+    accent: '#22c55e',
+    url: 'https://github.com/your-handle/pulse-dashboard',
+  },
+  {
+    id: 4,
+    name: 'Motion Studio',
+    description: 'A component playground exploring motion timing, easing, and feel.',
+    tag: 'Motion',
+    color: '#ffe8f4',
+    accent: '#ec4899',
+    url: 'https://github.com/your-handle/motion-studio',
+  },
+  {
+    id: 5,
+    name: 'Atlas API Kit',
+    description: 'Reusable API patterns with typed clients and resilient pagination.',
+    tag: 'API',
+    color: '#e8fff4',
+    accent: '#14b8a6',
+    url: 'https://github.com/your-handle/atlas-api-kit',
+  },
+  {
+    id: 6,
+    name: 'Graph Garden',
+    description: 'A visual builder that turns relationships into elegant layouts.',
+    tag: 'Code',
+    color: '#f0e8ff',
+    accent: '#8b5cf6',
+    url: 'https://github.com/your-handle/graph-garden',
+  },
+  {
+    id: 7,
+    name: 'Fjord Components',
+    description: 'A small design system with accessible components and tokens.',
+    tag: 'UI',
+    color: '#e8f4ff',
+    accent: '#3b82f6',
+    url: 'https://github.com/your-handle/fjord-components',
+  },
+  {
+    id: 8,
+    name: 'Keystone Scheduler',
+    description: 'A lightweight scheduling app with keyboard-first interactions.',
+    tag: 'Design',
+    color: '#fff4e8',
+    accent: '#f97316',
+    url: 'https://github.com/your-handle/keystone-scheduler',
+  },
+  {
+    id: 9,
+    name: 'Stream Metrics',
+    description: 'Performance metrics UI with a focus on clarity and speed.',
+    tag: 'Data',
+    color: '#f4ffe8',
+    accent: '#22c55e',
+    url: 'https://github.com/your-handle/stream-metrics',
+  },
+  {
+    id: 10,
+    name: 'Easing Experiments',
+    description: 'A collection of motion experiments for fluid, intentional animation.',
+    tag: 'Motion',
+    color: '#ffe8f4',
+    accent: '#ec4899',
+    url: 'https://github.com/your-handle/easing-experiments',
+  },
+  {
+    id: 11,
+    name: 'Typed Endpoints',
+    description: 'Typed server endpoints with clean request validation flows.',
+    tag: 'API',
+    color: '#e8fff4',
+    accent: '#14b8a6',
+    url: 'https://github.com/your-handle/typed-endpoints',
+  },
+  {
+    id: 12,
+    name: 'UI Recipes',
+    description: 'A set of reusable UI patterns that stay consistent under change.',
+    tag: 'Code',
+    color: '#f0e8ff',
+    accent: '#8b5cf6',
+    url: 'https://github.com/your-handle/ui-recipes',
+  },
+  {
+    id: 13,
+    name: 'Harbor Search',
+    description: 'Search UX experiments: ranking, highlighting, and fast feedback.',
+    tag: 'UI',
+    color: '#e8f4ff',
+    accent: '#3b82f6',
+    url: 'https://github.com/your-handle/harbor-search',
+  },
+  {
+    id: 14,
+    name: 'Cedar Analytics',
+    description: 'Analytics UI with opinionated empty states and dashboards that breathe.',
+    tag: 'Data',
+    color: '#f4ffe8',
+    accent: '#22c55e',
+    url: 'https://github.com/your-handle/cedar-analytics',
+  },
+  {
+    id: 15,
+    name: 'Glint Components',
+    description: 'Frosted-glass components and polish-focused interaction details.',
+    tag: 'Design',
+    color: '#fff4e8',
+    accent: '#f97316',
+    url: 'https://github.com/your-handle/glint-components',
+  },
+  {
+    id: 16,
+    name: 'Orbit Automations',
+    description: 'Automation flows and templates for repeatable workflows.',
+    tag: 'API',
+    color: '#e8fff4',
+    accent: '#14b8a6',
+    url: 'https://github.com/your-handle/orbit-automations',
+  },
+]
+

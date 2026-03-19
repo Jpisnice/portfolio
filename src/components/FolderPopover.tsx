@@ -3,41 +3,37 @@ import { useCallback, useEffect, useMemo, useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 
+import type { GithubProject } from '../data/githubProjects'
+
 // Reasonable “center panel” size for content.
 const POP_W = 380
 const POP_H = 260
 
-const TAGS = ['Design', 'Code', 'Data', 'Motion', 'API', 'UI'] as const
-const COLORS = ['#e8f4ff', '#fff4e8', '#f4ffe8', '#ffe8f4', '#e8fff4', '#f0e8ff'] as const
-const ACCENTS = ['#3b82f6', '#f97316', '#22c55e', '#ec4899', '#14b8a6', '#8b5cf6'] as const
-
 type Vec2 = { x: number; y: number }
 
 type FolderPopoverProps = {
-  folderId: number
+  project: GithubProject
   origin: Vec2 // viewport coordinates (same coordinate system as getBoundingClientRect)
   onClose: () => void
 }
 
-function getCardForFolderId(folderId: number) {
-  // Placeholder content deck; you can replace this with real folder metadata later.
-  const mod = ((folderId % 72) + 72) % 72
-  const paletteIndex = mod % 6
-  return {
-    id: mod,
-    label: `Folder ${mod + 1}`,
-    tag: TAGS[paletteIndex],
-    color: COLORS[paletteIndex],
-    accent: ACCENTS[paletteIndex],
-  }
-}
-
-export function FolderPopover({ folderId, origin, onClose }: FolderPopoverProps) {
+export function FolderPopover({ project, origin, onClose }: FolderPopoverProps) {
   const panelRef = useRef<HTMLDivElement | null>(null)
   const backdropRef = useRef<HTMLDivElement | null>(null)
   const closingRef = useRef(false)
 
-  const card = useMemo(() => getCardForFolderId(folderId), [folderId])
+  const card = useMemo(
+    () => ({
+      id: project.id,
+      label: project.name,
+      tag: project.tag,
+      description: project.description,
+      color: project.color,
+      accent: project.accent,
+      url: project.url,
+    }),
+    [project],
+  )
 
   const close = useCallback(() => {
     if (closingRef.current) return
@@ -154,7 +150,7 @@ export function FolderPopover({ folderId, origin, onClose }: FolderPopoverProps)
       )
     },
     {
-      dependencies: [origin.x, origin.y, folderId],
+      dependencies: [origin.x, origin.y, project.id],
       scope: panelRef,
     },
   )
@@ -187,10 +183,12 @@ export function FolderPopover({ folderId, origin, onClose }: FolderPopoverProps)
           width: POP_W,
           willChange: 'transform, opacity',
           height: POP_H,
-          background: '#fff',
-          border: '1px solid rgba(0,0,0,0.09)',
+          background:
+            'linear-gradient(165deg, color-mix(in oklab, var(--surface-strong) 90%, white 10%), var(--surface))',
+          border: '1px solid color-mix(in oklab, var(--line) 70%, transparent 30%)',
           borderRadius: 16,
-          boxShadow: '0 24px 60px rgba(0,0,0,0.18)',
+          boxShadow: '0 24px 60px rgba(0,0,0,0.16)',
+          backdropFilter: 'blur(12px) saturate(140%)',
           zIndex: 9999,
           overflow: 'hidden',
           opacity: 0,
@@ -250,13 +248,30 @@ export function FolderPopover({ folderId, origin, onClose }: FolderPopoverProps)
             style={{
               margin: '0 0 14px',
               fontSize: 13,
-              color: '#555',
+              color: 'color-mix(in oklab, var(--sea-ink-soft) 92%, white 8%)',
               lineHeight: 1.6,
             }}
           >
-            Popover is centered — but the <code style={{ background: '#f0f0f0', padding: '1px 5px', borderRadius: 4, fontSize: 12 }}>transform-origin</code>{' '}
-            aims at the clicked folder so the bloom radiates from it.
+            {card.description}
           </p>
+
+          <div style={{ marginBottom: 14 }}>
+            <span
+              style={{
+                display: 'inline-block',
+                padding: '4px 10px',
+                borderRadius: 999,
+                border: `1px solid color-mix(in oklab, ${card.accent} 34%, var(--line))`,
+                color: card.accent,
+                fontWeight: 700,
+                fontSize: 12,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {card.tag}
+            </span>
+          </div>
 
           <div style={{ display: 'flex', gap: 8 }}>
             <button
@@ -266,9 +281,9 @@ export function FolderPopover({ folderId, origin, onClose }: FolderPopoverProps)
                 flex: 1,
                 padding: '8px 0',
                 borderRadius: 9,
-                border: `1.5px solid ${card.accent}`,
+                border: `1.2px solid color-mix(in oklab, ${card.accent} 55%, var(--line))`,
                 background: 'transparent',
-                color: card.accent,
+                color: `color-mix(in oklab, ${card.accent} 70%, var(--sea-ink-soft) 30%)`,
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -276,23 +291,28 @@ export function FolderPopover({ folderId, origin, onClose }: FolderPopoverProps)
             >
               Dismiss
             </button>
-            <button
-              type="button"
-              onClick={close}
+            <a
+              href={card.url}
+              target="_blank"
+              rel="noreferrer"
               style={{
                 flex: 1,
                 padding: '8px 0',
                 borderRadius: 9,
                 border: 'none',
-                background: card.accent,
+                background: `linear-gradient(180deg, color-mix(in oklab, ${card.accent} 90%, white 10%), ${card.accent})`,
                 color: '#fff',
                 fontSize: 13,
                 fontWeight: 600,
                 cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textDecoration: 'none',
               }}
             >
-              Open &rarr;
-            </button>
+              Open repo &rarr;
+            </a>
           </div>
         </div>
       </div>

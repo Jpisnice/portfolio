@@ -257,3 +257,104 @@ a {
     transform: translateY(0);
   }
 }
+
+/* Minimal frosted-glass UI primitives */
+.glass-frost {
+  background: color-mix(in oklab, var(--surface-strong) 78%, transparent 22%);
+  border: 1px solid color-mix(in oklab, var(--line) 70%, transparent 30%);
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow:
+    0 18px 50px rgba(0, 0, 0, 0.12),
+    0 1px 0 var(--inset-glint) inset;
+}
+
+.glass-frost-hover {
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.glass-frost-hover:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in oklab, var(--lagoon-deep) 34%, var(--line));
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.16),
+    0 1px 0 var(--inset-glint) inset;
+}
+
+/* Portfolio overlay chrome */
+.portfolio-search {
+  position: fixed;
+  top: 18px;
+  left: 50%;
+  translate: -50% 0;
+  z-index: 60;
+  border-radius: 4px;
+  padding: 10px 14px;
+  width: min(560px, calc(100vw - 28px));
+}
+
+.portfolio-search-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.portfolio-search-icon {
+  color: var(--sea-ink-soft);
+  display: inline-flex;
+}
+
+.portfolio-search-input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--sea-ink);
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.portfolio-search-input::placeholder {
+  color: color-mix(in oklab, var(--sea-ink-soft) 70%, transparent);
+  font-weight: 600;
+}
+
+.portfolio-search:hover {
+  translate: -50% -2px;
+}
+
+.portfolio-socials {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.portfolio-social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 4px;
+  text-decoration: none;
+  color: var(--sea-ink-soft);
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.portfolio-social-icon {
+  color: var(--sea-ink-soft);
+  display: inline-flex;
+}
+
+.portfolio-social-label {
+  transform: translateY(-0.5px);
+}
+
+.portfolio-social-label {
+  display: none; /* icons only */
+}
