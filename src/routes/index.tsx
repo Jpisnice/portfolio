@@ -10,6 +10,7 @@ function App() {
   return (
     <>
       <FolderGrid projects={githubProjects} />
+      <div className="portfolio-vignette-layer" aria-hidden="true" />
       <PortfolioChrome />
     </>
   )

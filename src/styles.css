@@ -358,3 +358,16 @@ a {
 .portfolio-social-label {
   display: none; /* icons only */
 }
+
+.portfolio-vignette-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40; /* Between folder grid and glass chrome */
+  background: radial-gradient(
+    ellipse at center,
+    transparent 52%,
+    color-mix(in oklab, var(--sea-ink) 20%, transparent) 100%
+  );
+  opacity: 0.32;
+}
