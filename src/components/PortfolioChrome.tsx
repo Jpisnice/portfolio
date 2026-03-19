@@ -2,6 +2,8 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 import { useMemo, useRef, useState } from 'react'
 
+import { LiquidGlass } from './LiquidGlass'
+
 function MagnifierIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none">
@@ -159,11 +161,7 @@ export function PortfolioChrome() {
         }}
         aria-hidden={false}
       >
-        <div
-          ref={searchRef}
-          style={{ pointerEvents: 'auto' }}
-          className="portfolio-search glass-frost"
-        >
+        <LiquidGlass ref={searchRef} distort={false} as="div" style={{ pointerEvents: 'auto' }} className="portfolio-search">
           <div className="portfolio-search-inner">
             <span className="portfolio-search-icon" aria-hidden="true">
               <MagnifierIcon />
@@ -177,23 +175,25 @@ export function PortfolioChrome() {
               className="portfolio-search-input"
             />
           </div>
-        </div>
+        </LiquidGlass>
 
         <div ref={socialsRef} className="portfolio-socials" style={{ pointerEvents: 'auto' }}>
           {socials.map((s) => (
-            <a
+            <LiquidGlass
+              as="a"
               key={s.key}
               href={s.href}
               target="_blank"
               rel="noreferrer"
-              className="portfolio-social-btn glass-frost glass-frost-hover"
+              className="portfolio-social-btn"
+              hoverable
               aria-label={s.label}
             >
               <span className="portfolio-social-icon" aria-hidden="true">
                 {s.icon}
               </span>
               <span className="portfolio-social-label">{s.label}</span>
-            </a>
+            </LiquidGlass>
           ))}
         </div>
       </div>
