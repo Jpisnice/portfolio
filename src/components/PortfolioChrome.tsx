@@ -1,6 +1,6 @@
 import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { LiquidGlass } from './LiquidGlass'
 
@@ -100,12 +100,59 @@ function EmailIcon() {
   )
 }
 
+function SunIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.8" />
+      <path d="M12 3.5v2.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M12 18.3v2.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M3.5 12h2.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M18.3 12h2.2" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m6 6 1.6 1.6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m16.4 16.4 1.6 1.6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="m18 6-1.6 1.6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+      <path d="M7.6 16.4 6 18" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+    </svg>
+  )
+}
+
+function MoonIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none">
+      <path
+        d="M20 14.5a8.5 8.5 0 1 1-10.5-10.4 7 7 0 1 0 10.5 10.4Z"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 export function PortfolioChrome() {
   const searchRef = useRef<HTMLDivElement | null>(null)
   const socialsRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
   const [query, setQuery] = useState('')
+  const [theme, setTheme] = useState<'light' | 'dark'>('dark')
+
+  useEffect(() => {
+    const root = document.documentElement
+    const storedTheme = localStorage.getItem('theme')
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+    const nextTheme = storedTheme === 'light' || storedTheme === 'dark' ? storedTheme : prefersDark ? 'dark' : 'light'
+
+    root.setAttribute('data-theme', nextTheme)
+    setTheme(nextTheme)
+  }, [])
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark'
+    document.documentElement.setAttribute('data-theme', nextTheme)
+    localStorage.setItem('theme', nextTheme)
+    setTheme(nextTheme)
+  }
 
   const socials = useMemo(
     () => [
@@ -175,6 +222,21 @@ export function PortfolioChrome() {
               className="portfolio-search-input"
             />
           </div>
+        </LiquidGlass>
+
+        <LiquidGlass
+          as="button"
+          type="button"
+          className="portfolio-theme-toggle"
+          style={{ pointerEvents: 'auto' }}
+          onClick={toggleTheme}
+          aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+          title={theme === 'dark' ? 'Light mode' : 'Dark mode'}
+          hoverable
+        >
+          <span className="portfolio-theme-icon" aria-hidden="true">
+            {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
+          </span>
         </LiquidGlass>
 
         <div ref={socialsRef} className="portfolio-socials" style={{ pointerEvents: 'auto' }}>

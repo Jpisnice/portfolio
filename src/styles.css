@@ -41,7 +41,7 @@
   --line: rgba(141, 229, 219, 0.18);
   --inset-glint: rgba(194, 247, 238, 0.14);
   --kicker: #b8efe5;
-  --bg-base: #0a1418;
+  --bg-base: #000000;
   --header-bg: rgba(10, 20, 24, 0.8);
   --chip-bg: rgba(13, 28, 32, 0.9);
   --chip-line: rgba(141, 229, 219, 0.24);
@@ -64,7 +64,7 @@
     --line: rgba(141, 229, 219, 0.18);
     --inset-glint: rgba(194, 247, 238, 0.14);
     --kicker: #b8efe5;
-    --bg-base: #0a1418;
+    --bg-base: #000000;
     --header-bg: rgba(10, 20, 24, 0.8);
     --chip-bg: rgba(13, 28, 32, 0.9);
     --chip-line: rgba(141, 229, 219, 0.24);
@@ -99,6 +99,16 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+:root[data-theme="dark"] body {
+  background: #000000;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body {
+    background: #000000;
+  }
+}
+
 body::before {
   content: "";
   position: fixed;
@@ -110,6 +120,24 @@ body::before {
     radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.8), transparent 34%),
     radial-gradient(circle at 78% 26%, rgba(79, 184, 178, 0.2), transparent 42%),
     radial-gradient(circle at 42% 82%, rgba(47, 106, 74, 0.14), transparent 36%);
+}
+
+:root[data-theme="dark"] body::before {
+  opacity: 0.1;
+  background:
+    radial-gradient(circle at 24% 14%, rgba(255, 255, 255, 0.14), transparent 36%),
+    radial-gradient(circle at 78% 26%, rgba(96, 215, 207, 0.1), transparent 42%),
+    radial-gradient(circle at 42% 82%, rgba(110, 200, 154, 0.08), transparent 36%);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body::before {
+    opacity: 0.1;
+    background:
+      radial-gradient(circle at 24% 14%, rgba(255, 255, 255, 0.14), transparent 36%),
+      radial-gradient(circle at 78% 26%, rgba(96, 215, 207, 0.1), transparent 42%),
+      radial-gradient(circle at 42% 82%, rgba(110, 200, 154, 0.08), transparent 36%);
+  }
 }
 
 body::after {
@@ -124,6 +152,22 @@ body::after {
     linear-gradient(90deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 28px 28px;
   mask-image: radial-gradient(circle at 50% 30%, black, transparent 78%);
+}
+
+:root[data-theme="dark"] body::after {
+  opacity: 0.08;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) body::after {
+    opacity: 0.08;
+    background-image:
+      linear-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  }
 }
 
 a {
@@ -334,6 +378,33 @@ a {
   gap: 10px;
 }
 
+.portfolio-theme-toggle {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 60;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--sea-ink);
+  background: transparent;
+  padding: 0;
+}
+
+.portfolio-theme-toggle:hover {
+  transform: translateY(-2px);
+}
+
+.portfolio-theme-icon {
+  display: inline-flex;
+  color: var(--sea-ink);
+}
+
 .portfolio-social-btn {
   display: inline-flex;
   align-items: center;
@@ -364,10 +435,18 @@ a {
   inset: 0;
   pointer-events: none;
   z-index: 40; /* Between folder grid and glass chrome */
-  background: radial-gradient(
-    ellipse at center,
-    transparent 52%,
-    color-mix(in oklab, var(--sea-ink) 20%, transparent) 100%
-  );
-  opacity: 0.32;
+  background: radial-gradient(ellipse at center, transparent 56%, rgba(23, 58, 64, 0.2) 100%);
+  opacity: 0.3;
+}
+
+:root[data-theme="dark"] .portfolio-vignette-layer {
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.76) 100%);
+  opacity: 0.5;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .portfolio-vignette-layer {
+    background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.76) 100%);
+    opacity: 0.5;
+  }
 }
