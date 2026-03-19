@@ -1,20 +1,11 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useEffect, useMemo, useRef, useState } from "react";
+import type { MouseEvent as ReactMouseEvent } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import folderMaskUrl from "../assets/folder.svg?url";
 
 type Dir = "ltr" | "rtl";
 
-const PALETTE: Array<{ body: string; shade: string; dark: string }> = [
-	{ body: "#7ec8e3", shade: "#5ab4d4", dark: "#3a9ab8" },
-	{ body: "#89d4e8", shade: "#65bedd", dark: "#45a6c8" },
-	{ body: "#6cbfe0", shade: "#4aadd1", dark: "#2d97bc" },
-];
-
-function FolderIcon({ colorIndex = 0 }: { colorIndex?: number }) {
-	// The source SVG already contains the full-resolution artwork.
-	// `colorIndex` is kept only to avoid changing the call sites.
-	void colorIndex;
-
+function FolderIcon() {
 	return (
 		<img
 			alt=""
@@ -54,27 +45,16 @@ const ITEM_STEP = FOLDER_WIDTH + FOLDER_GAP;
 const ROW_HEIGHT = FOLDER_HEIGHT + PADDING_TOP * 2;
 
 // Big enough to feel infinite; we wrap scrollLeft away from edges.
-const ITEM_COUNT = 2000;
+// Kept even so HALF_COUNT stays integral.
+const ITEM_COUNT = 1200;
 const HALF_COUNT = ITEM_COUNT / 2;
 const TOTAL_PX = ITEM_COUNT * ITEM_STEP;
 const MID_PX = HALF_COUNT * ITEM_STEP;
 const WRAP_THRESHOLD_PX = FOLDERS_PER_ROW * ITEM_STEP; // matches the old "half" translation
-const OVERSCAN = 5;
+const OVERSCAN = 3;
 const GRID_ROW_GAP = Math.round(6 * FOLDER_SCALE);
 
-function mod(n: number, m: number) {
-	return ((n % m) + m) % m;
-}
-
-function VirtualMarqueeRow({
-	rowIndex,
-	duration,
-	dir,
-}: {
-	rowIndex: number;
-	duration: number;
-	dir: Dir;
-}) {
+function VirtualMarqueeRow({ duration, dir }: { duration: number; dir: Dir }) {
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const [hoveredAbsIndex, setHoveredAbsIndex] = useState<number | null>(null);
 
@@ -90,13 +70,34 @@ function VirtualMarqueeRow({
 		return halfRangePx / duration;
 	}, [duration]);
 
+	const getScrollElement = useCallback(() => scrollRef.current, []);
+	const estimateSize = useCallback(() => ITEM_STEP, []);
+
 	const virtualizer = useVirtualizer({
 		horizontal: true,
 		count: ITEM_COUNT,
-		getScrollElement: () => scrollRef.current,
-		estimateSize: () => ITEM_STEP,
+		getScrollElement,
+		estimateSize,
 		overscan: OVERSCAN,
 	});
+
+	const handleMouseEnter = useCallback(
+		(e: ReactMouseEvent<HTMLButtonElement>) => {
+			pausedRef.current = true;
+			const absIndexRaw = e.currentTarget.dataset.absIndex as
+				| string
+				| undefined;
+			const absIndex = absIndexRaw ? Number(absIndexRaw) : NaN;
+			if (Number.isNaN(absIndex)) return;
+			setHoveredAbsIndex((prev) => (prev === absIndex ? prev : absIndex));
+		},
+		[],
+	);
+
+	const handleMouseLeave = useCallback(() => {
+		pausedRef.current = false;
+		setHoveredAbsIndex(null);
+	}, []);
 
 	useEffect(() => {
 		const el = scrollRef.current;
@@ -150,39 +151,25 @@ function VirtualMarqueeRow({
 			>
 				{virtualizer.getVirtualItems().map((virtualItem) => {
 					const absIndex = indexOffsetRef.current + virtualItem.index;
-					const colorIndex = mod(rowIndex + absIndex, PALETTE.length);
 					const isHovered = hoveredAbsIndex === absIndex;
 
 					return (
 						<div
 							key={virtualItem.key}
+							className="folder-marquee-item"
 							style={{
-								position: "absolute",
-								top: PADDING_TOP,
-								left: 0,
 								transform: `translateX(${virtualItem.start + PADDING_LEFT}px)`,
-								height: FOLDER_HEIGHT,
 							}}
 						>
 							<button
 								type="button"
-								style={{
-									...styles.folderBtn,
-									transform: isHovered
-										? "scale(1.14) translateY(-4px)"
-										: "scale(1) translateY(0)",
-								}}
-								onMouseEnter={() => {
-									pausedRef.current = true;
-									setHoveredAbsIndex(absIndex);
-								}}
-								onMouseLeave={() => {
-									pausedRef.current = false;
-									setHoveredAbsIndex(null);
-								}}
+								className={`folder-btn${isHovered ? " folder-btn--hover" : ""}`}
+								data-abs-index={absIndex}
+								onMouseEnter={handleMouseEnter}
+								onMouseLeave={handleMouseLeave}
 								aria-label="Folder"
 							>
-								<FolderIcon colorIndex={colorIndex} />
+								<FolderIcon />
 							</button>
 						</div>
 					);
@@ -205,12 +192,35 @@ export function FolderGrid({
 		<>
 			<style>{`
         .folder-marquee-scroll::-webkit-scrollbar { display: none; }
+        .folder-marquee-item {
+          position: absolute;
+          top: ${PADDING_TOP}px;
+          left: 0;
+          height: ${FOLDER_HEIGHT}px;
+        }
+        .folder-btn {
+          flex-shrink: 0;
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          width: ${FOLDER_WIDTH}px;
+          height: ${FOLDER_HEIGHT}px;
+          transition: transform 0.18s cubic-bezier(.34,1.56,.64,1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transform: scale(1) translateY(0);
+          will-change: transform;
+        }
+        .folder-btn--hover {
+          transform: scale(1.14) translateY(-4px);
+        }
       `}</style>
 			<div style={styles.gridWrap} className={className}>
 				{config.map((row) => (
 					<VirtualMarqueeRow
 						key={row.id}
-						rowIndex={row.id}
 						duration={row.duration}
 						dir={row.dir}
 					/>
@@ -225,7 +235,6 @@ export default FolderGrid;
 const styles: {
 	gridWrap: React.CSSProperties;
 	rowOuter: React.CSSProperties;
-	folderBtn: React.CSSProperties;
 } = {
 	gridWrap: {
 		overflow: "hidden",
@@ -248,18 +257,5 @@ const styles: {
 		height: ROW_HEIGHT,
 		scrollbarWidth: "none",
 		msOverflowStyle: "none",
-	},
-	folderBtn: {
-		flexShrink: 0,
-		background: "none",
-		border: "none",
-		padding: 0,
-		cursor: "pointer",
-		width: `${FOLDER_WIDTH}px`,
-		height: `${FOLDER_HEIGHT}px`,
-		transition: "transform 0.18s cubic-bezier(.34,1.56,.64,1)",
-		display: "flex",
-		alignItems: "center",
-		justifyContent: "center",
 	},
 };
