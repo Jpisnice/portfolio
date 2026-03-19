@@ -44,11 +44,12 @@ const ROW_CONFIG: Array<{ dir: Dir; duration: number; id: number }> = [
 ];
 
 const FOLDERS_PER_ROW = 14; // duplicated x2 for seamless loop
-const FOLDER_WIDTH = 70;
-const FOLDER_HEIGHT = 62;
-const FOLDER_GAP = 10;
-const PADDING_TOP = 4;
-const PADDING_LEFT = 5;
+const FOLDER_SCALE = 1.05;
+const FOLDER_WIDTH = Math.round(70 * FOLDER_SCALE);
+const FOLDER_HEIGHT = Math.round(62 * FOLDER_SCALE);
+const FOLDER_GAP = Math.round(10 * FOLDER_SCALE);
+const PADDING_TOP = Math.round(4 * FOLDER_SCALE);
+const PADDING_LEFT = Math.round(5 * FOLDER_SCALE);
 const ITEM_STEP = FOLDER_WIDTH + FOLDER_GAP;
 const ROW_HEIGHT = FOLDER_HEIGHT + PADDING_TOP * 2;
 
@@ -59,6 +60,7 @@ const TOTAL_PX = ITEM_COUNT * ITEM_STEP;
 const MID_PX = HALF_COUNT * ITEM_STEP;
 const WRAP_THRESHOLD_PX = FOLDERS_PER_ROW * ITEM_STEP; // matches the old "half" translation
 const OVERSCAN = 5;
+const GRID_ROW_GAP = Math.round(6 * FOLDER_SCALE);
 
 function mod(n: number, m: number) {
 	return ((n % m) + m) % m;
@@ -191,7 +193,7 @@ function VirtualMarqueeRow({
 }
 
 export function FolderGrid({
-	rows = ROW_CONFIG.length,
+	rows = Math.max(1, ROW_CONFIG.length - 1),
 	className = "",
 }: {
 	rows?: number;
@@ -229,7 +231,7 @@ const styles: {
 		overflow: "hidden",
 		display: "flex",
 		flexDirection: "column",
-		gap: "6px",
+		gap: `${GRID_ROW_GAP}px`,
 		padding: "0",
 		background: "#eef1f5",
 		borderRadius: "0",
@@ -253,8 +255,8 @@ const styles: {
 		border: "none",
 		padding: 0,
 		cursor: "pointer",
-		width: "70px",
-		height: "62px",
+		width: `${FOLDER_WIDTH}px`,
+		height: `${FOLDER_HEIGHT}px`,
 		transition: "transform 0.18s cubic-bezier(.34,1.56,.64,1)",
 		display: "flex",
 		alignItems: "center",
