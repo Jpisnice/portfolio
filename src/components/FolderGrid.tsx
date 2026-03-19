@@ -1,7 +1,7 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import type { MouseEvent as ReactMouseEvent } from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import folderMaskUrl from "../assets/folder.svg?url";
+import { FolderPopover } from "./FolderPopover";
 
 type Dir = "ltr" | "rtl";
 
@@ -187,6 +187,40 @@ export function FolderGrid({
 	className?: string;
 }) {
 	const config = ROW_CONFIG.slice(0, rows);
+	const [active, setActive] = useState<null | { folderId: number; origin: { x: number; y: number } }>(
+		null,
+	);
+
+	const gridRef = useRef<HTMLDivElement | null>(null);
+
+	const handleGridClick = useCallback((e: MouseEvent) => {
+		const target = e.target as HTMLElement | null;
+		if (!target) return;
+
+		const btn = target.closest<HTMLButtonElement>("button[data-abs-index]");
+		if (!btn) return;
+
+		const absIndexRaw = btn.dataset.absIndex;
+		const folderId = absIndexRaw ? Number(absIndexRaw) : NaN;
+		if (Number.isNaN(folderId)) return;
+
+		const rect = btn.getBoundingClientRect();
+		const origin = {
+			x: rect.left + rect.width / 2,
+			y: rect.top + rect.height / 2,
+		};
+
+		setActive({ folderId, origin });
+	}, []);
+
+	useEffect(() => {
+		const el = gridRef.current;
+		if (!el) return;
+
+		// Native listener avoids accessibility lint errors on `onClick` for a static container.
+		el.addEventListener("click", handleGridClick);
+		return () => el.removeEventListener("click", handleGridClick);
+	}, [handleGridClick]);
 
 	return (
 		<>
@@ -217,7 +251,7 @@ export function FolderGrid({
           transform: scale(1.14) translateY(-4px);
         }
       `}</style>
-			<div style={styles.gridWrap} className={className}>
+			<div ref={gridRef} style={styles.gridWrap} className={className}>
 				{config.map((row) => (
 					<VirtualMarqueeRow
 						key={row.id}
@@ -226,6 +260,14 @@ export function FolderGrid({
 					/>
 				))}
 			</div>
+
+			{active && (
+				<FolderPopover
+					folderId={active.folderId}
+					origin={active.origin}
+					onClose={() => setActive(null)}
+				/>
+			)}
 		</>
 	);
 }
