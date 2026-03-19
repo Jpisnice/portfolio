@@ -1,5 +1,12 @@
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router'
 import appCss from '../styles.css?url'
+import { PostHogProvider } from 'posthog-js/react'
+
+
+const options = {
+  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+  defaults: '2026-01-30',
+} as const
 
 export const Route = createRootRoute({
   head: () => ({
@@ -32,8 +39,10 @@ function RootDocument({ children }: { children: React.ReactNode }) {
         <HeadContent />
       </head>
       <body style={{ margin: 0, padding: 0, width: '100vw', height: '100vh' }}>
+        <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={options}>
         {children}
         <Scripts />
+        </PostHogProvider>
       </body>
     </html>
   )

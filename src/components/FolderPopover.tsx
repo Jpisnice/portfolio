@@ -4,6 +4,7 @@ import { useGSAP } from '@gsap/react'
 import gsap from 'gsap'
 
 import type { GithubProject } from '../data/githubProjects'
+import posthog from 'posthog-js'
 
 // Reasonable “center panel” size for content.
 const POP_W = 380
@@ -36,6 +37,7 @@ export function FolderPopover({ project, origin, onClose }: FolderPopoverProps) 
   )
 
   const close = useCallback(() => {
+    posthog.capture('closed_popup', { property: "this card" })
     if (closingRef.current) return
     closingRef.current = true
 
