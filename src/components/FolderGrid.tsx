@@ -113,6 +113,13 @@ function VirtualMarqueeRow({
 	}, []);
 
 	useEffect(() => {
+		// Query updates can recycle virtualized items under the pointer, so force-resume
+		// to avoid any row getting stuck in a paused state.
+		pausedRef.current = false;
+		setHoveredAbsIndex(null);
+	}, [searchActive, matchingIndices]);
+
+	useEffect(() => {
 		const el = scrollRef.current;
 		if (!el) return;
 
@@ -154,6 +161,7 @@ function VirtualMarqueeRow({
 			ref={scrollRef}
 			style={styles.rowOuter}
 			className="folder-marquee-scroll"
+			onMouseLeave={handleMouseLeave}
 		>
 			<div
 				style={{
