@@ -9,12 +9,16 @@ type DocumentWithViewTransition = Document & {
   startViewTransition?: (updateCallback: () => void) => { finished: Promise<void> }
 }
 
-export function PortfolioChrome() {
+type PortfolioChromeProps = {
+  query: string
+  onQueryChange: (value: string) => void
+}
+
+export function PortfolioChrome({ query, onQueryChange }: PortfolioChromeProps) {
   const searchRef = useRef<HTMLDivElement | null>(null)
   const socialsRef = useRef<HTMLDivElement | null>(null)
   const inputRef = useRef<HTMLInputElement | null>(null)
 
-  const [query, setQuery] = useState('')
   const [theme, setTheme] = useState<'light' | 'dark'>('dark')
 
   useEffect(() => {
@@ -106,7 +110,7 @@ export function PortfolioChrome() {
             <input
               ref={inputRef}
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => onQueryChange(e.target.value)}
               placeholder="Search projects…"
               aria-label="Search projects"
               className="portfolio-search-input"

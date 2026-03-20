@@ -55,7 +55,19 @@ const WRAP_THRESHOLD_PX = FOLDERS_PER_ROW * ITEM_STEP; // matches the old "half"
 const OVERSCAN = 3;
 const GRID_ROW_GAP = Math.round(6 * FOLDER_SCALE);
 
-function VirtualMarqueeRow({ duration, dir }: { duration: number; dir: Dir }) {
+function VirtualMarqueeRow({
+	duration,
+	dir,
+	projectCount,
+	matchingIndices,
+	searchActive,
+}: {
+	duration: number;
+	dir: Dir;
+	projectCount: number;
+	matchingIndices: Set<number>;
+	searchActive: boolean;
+}) {
 	const scrollRef = useRef<HTMLDivElement | null>(null);
 	const [hoveredAbsIndex, setHoveredAbsIndex] = useState<number | null>(null);
 
@@ -154,6 +166,15 @@ function VirtualMarqueeRow({ duration, dir }: { duration: number; dir: Dir }) {
 					const absIndex = indexOffsetRef.current + virtualItem.index;
 					const isHovered = hoveredAbsIndex === absIndex;
 
+					const projectIndex =
+						projectCount > 0
+							? ((absIndex % projectCount) + projectCount) % projectCount
+							: 0;
+					const isDimmed =
+						searchActive &&
+						projectCount > 0 &&
+						!matchingIndices.has(projectIndex);
+
 					return (
 						<div
 							key={virtualItem.key}
@@ -169,6 +190,9 @@ function VirtualMarqueeRow({ duration, dir }: { duration: number; dir: Dir }) {
 								onMouseEnter={handleMouseEnter}
 								onMouseLeave={handleMouseLeave}
 								aria-label="Folder"
+								style={{
+									filter: isDimmed ? "grayscale(100%) opacity(0.35)" : "none",
+								}}
 							>
 								<FolderIcon />
 							</button>
@@ -182,10 +206,14 @@ function VirtualMarqueeRow({ duration, dir }: { duration: number; dir: Dir }) {
 
 export function FolderGrid({
 	projects,
+	matchingIndices,
+	searchActive,
 	rows = Math.max(1, ROW_CONFIG.length - 1),
 	className = "",
 }: {
 	projects: GithubProject[];
+	matchingIndices: Set<number>;
+	searchActive: boolean;
 	rows?: number;
 	className?: string;
 }) {
@@ -247,7 +275,7 @@ export function FolderGrid({
           cursor: pointer;
           width: ${FOLDER_WIDTH}px;
           height: ${FOLDER_HEIGHT}px;
-          transition: transform 0.18s cubic-bezier(.34,1.56,.64,1);
+          transition: transform 0.18s cubic-bezier(.34,1.56,.64,1), filter 0.25s ease;
           display: flex;
           align-items: center;
           justify-content: center;
@@ -264,6 +292,9 @@ export function FolderGrid({
 						key={row.id}
 						duration={row.duration}
 						dir={row.dir}
+						projectCount={projects.length}
+						matchingIndices={matchingIndices}
+						searchActive={searchActive}
 					/>
 				))}
 			</div>
