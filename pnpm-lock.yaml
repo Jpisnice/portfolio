@@ -11,6 +11,9 @@ importers:
       '@gsap/react':
         specifier: ^2.1.2
         version: 2.1.2(gsap@3.14.2)(react@19.2.4)
+      '@m31coding/fuzzy-search':
+        specifier: ^2.0.0
+        version: 2.0.0
       '@tailwindcss/vite':
         specifier: ^4.1.18
         version: 4.2.2(vite@7.3.1(@types/node@22.19.15)(jiti@2.6.1)(lightningcss@1.32.0)(tsx@4.21.0))
@@ -509,6 +512,9 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@m31coding/fuzzy-search@2.0.0':
+    resolution: {integrity: sha512-g0ZKZhzBgZtVVKMOuUlQfTJS/LKMCnvKxLenOFOncjoJFkwX2YLMDmXYomBdda8fv0IRfAvOWPikFCBALE8mDg==}
 
   '@napi-rs/wasm-runtime@1.1.1':
     resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
@@ -2731,6 +2737,8 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@m31coding/fuzzy-search@2.0.0': {}
 
   '@napi-rs/wasm-runtime@1.1.1':
     dependencies:

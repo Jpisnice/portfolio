@@ -1,8 +1,15 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useCallback, useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
+import {
+	type MouseEvent as ReactMouseEvent,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import folderMaskUrl from "../assets/folder.svg?url";
-import { FolderPopover } from "./FolderPopover";
 import type { GithubProject } from "../data/githubProjects";
+import { FolderPopover } from "./FolderPopover";
 
 type Dir = "ltr" | "rtl";
 
@@ -47,7 +54,7 @@ const ROW_HEIGHT = FOLDER_HEIGHT + PADDING_TOP * 2;
 
 // Big enough to feel infinite; we wrap scrollLeft away from edges.
 // Kept even so HALF_COUNT stays integral.
-const ITEM_COUNT = 1200;
+const ITEM_COUNT = 2000;
 const HALF_COUNT = ITEM_COUNT / 2;
 const TOTAL_PX = ITEM_COUNT * ITEM_STEP;
 const MID_PX = HALF_COUNT * ITEM_STEP;
@@ -113,11 +120,15 @@ function VirtualMarqueeRow({
 	}, []);
 
 	useEffect(() => {
+		// Make lint understand that this effect is intentionally tied to matchingIndices changes.
+		// The value isn't used, but the reference identity is.
+		matchingIndices.size;
+
 		// Query updates can recycle virtualized items under the pointer, so force-resume
 		// to avoid any row getting stuck in a paused state.
 		pausedRef.current = false;
 		setHoveredAbsIndex(null);
-	}, [searchActive, matchingIndices]);
+	}, [matchingIndices]);
 
 	useEffect(() => {
 		const el = scrollRef.current;
@@ -161,7 +172,6 @@ function VirtualMarqueeRow({
 			ref={scrollRef}
 			style={styles.rowOuter}
 			className="folder-marquee-scroll"
-			onMouseLeave={handleMouseLeave}
 		>
 			<div
 				style={{
@@ -226,35 +236,40 @@ export function FolderGrid({
 	className?: string;
 }) {
 	const config = ROW_CONFIG.slice(0, rows);
-	const [active, setActive] = useState<null | { projectIndex: number; origin: { x: number; y: number } }>(
-		null
-	);
+	const [active, setActive] = useState<null | {
+		projectIndex: number;
+		origin: { x: number; y: number };
+	}>(null);
 
 	const gridRef = useRef<HTMLDivElement | null>(null);
 
-	const handleGridClick = useCallback((e: MouseEvent) => {
-		const target = e.target as HTMLElement | null;
-		if (!target) return;
+	const handleGridClick = useCallback(
+		(e: MouseEvent) => {
+			const target = e.target as HTMLElement | null;
+			if (!target) return;
 
-		const btn = target.closest<HTMLButtonElement>("button[data-abs-index]");
-		if (!btn) return;
+			const btn = target.closest<HTMLButtonElement>("button[data-abs-index]");
+			if (!btn) return;
 
-		const absIndexRaw = btn.dataset.absIndex;
-		const absIndex = absIndexRaw ? Number(absIndexRaw) : NaN;
-		if (Number.isNaN(absIndex)) return;
+			const absIndexRaw = btn.dataset.absIndex;
+			const absIndex = absIndexRaw ? Number(absIndexRaw) : NaN;
+			if (Number.isNaN(absIndex)) return;
 
-		const projectCount = projects.length;
-		if (projectCount === 0) return;
-		const projectIndex = ((absIndex % projectCount) + projectCount) % projectCount;
+			const projectCount = projects.length;
+			if (projectCount === 0) return;
+			const projectIndex =
+				((absIndex % projectCount) + projectCount) % projectCount;
 
-		const rect = btn.getBoundingClientRect();
-		const origin = {
-			x: rect.left + rect.width / 2,
-			y: rect.top + rect.height / 2,
-		};
+			const rect = btn.getBoundingClientRect();
+			const origin = {
+				x: rect.left + rect.width / 2,
+				y: rect.top + rect.height / 2,
+			};
 
-		setActive({ projectIndex, origin });
-	}, [projects.length]);
+			setActive({ projectIndex, origin });
+		},
+		[projects.length],
+	);
 
 	useEffect(() => {
 		const el = gridRef.current;

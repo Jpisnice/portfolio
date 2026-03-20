@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",
+    "@m31coding/fuzzy-search": "^2.0.0",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/react-devtools": "latest",
     "@tanstack/react-router": "latest",
